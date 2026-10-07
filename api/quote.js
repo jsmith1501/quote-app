@@ -24,7 +24,10 @@ export default async function handler(req, res) {
       }
     );
 
-    if (!aiRes.ok) throw new Error("Gemini error " + aiRes.status);
+if (!aiRes.ok) {
+  const body = await aiRes.text();
+  throw new Error(`Gemini error ${aiRes.status}: ${body.slice(0, 300)}`);
+}
     const aiData = await aiRes.json();
     const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     if (!text) throw new Error("Empty response from Gemini");
