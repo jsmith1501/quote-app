@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Quote Generator</title>
+  <style>
+    body { font-family: Georgia, serif; background: #1e1e2e; color: #eee;
+           display: flex; justify-content: center; align-items: center;
+           min-height: 100vh; margin: 0; }
+    .card { background: #2b2b40; padding: 2rem; border-radius: 12px;
+            max-width: 500px; text-align: center; }
+    #quote { font-size: 1.5rem; }
+    #author { color: #aaa; }
+    button { padding: .7rem 1.4rem; border: 0; border-radius: 8px;
+             background: #7c5cff; color: white; font-size: 1rem; cursor: pointer; }
+    button:disabled { opacity: .6; cursor: wait; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <p id="quote">Click the button!</p>
+    <p id="author"></p>
+    <button id="new">New quote</button>
+  </div>
+  <script>
+    const btn = document.getElementById("new");
+    async function loadQuote() {
+      btn.disabled = true;
+      btn.textContent = "Thinking...";
+      try {
+        const res = await fetch("/api/quote");
+        const q = await res.json();
+        document.getElementById("quote").textContent = q.text;
+        document.getElementById("author").textContent = "— " + q.author;
+      } catch {
+        document.getElementById("quote").textContent = "Something went wrong.";
+      }
+      btn.disabled = false;
+      btn.textContent = "New quote";
+    }
+    btn.onclick = loadQuote;
+    loadQuote();
+  </script>
+</body>
+</html>
