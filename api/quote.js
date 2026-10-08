@@ -24,22 +24,22 @@ export default async function handler(req, res) {
       }
     );
 
-if (!aiRes.ok) {
-  const body = await aiRes.text();
-  throw new Error(`Gemini error ${aiRes.status}: ${body.slice(0, 300)}`);
-}
+    if (!aiRes.ok) {
+      const body = await aiRes.text();
+      throw new Error(`Gemini error ${aiRes.status}: ${body.slice(0, 300)}`);
+    }
     const aiData = await aiRes.json();
     const text = aiData.candidates?.[0]?.content?.parts?.[0]?.text?.trim();
     if (!text) throw new Error("Empty response from Gemini");
 
     // 2. Save it in Neon so your collection grows over time
     const sql = neon(process.env.DATABASE_URL);
-    await sql`INSERT INTO quotes (text, author) VALUES (${text}, 'AI-generated')`;
+    await sql`INSERT INTO quotes (text, author) VALUES (${text}, 'anonymous')`;
 
     // 3. Send it to the browser
-    res.status(200).json({ text, author: "AI-generated" });
+    res.status(200).json({ text, author: "anonymous" });
   } catch (err) {
     console.error(err);
-res.status(500).json({ error: "Could not generate a quote. Try again in a moment." });
+    res.status(500).json({ error: "Could not generate a quote. Try again in a moment." });
   }
 }
