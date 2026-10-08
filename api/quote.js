@@ -40,6 +40,6 @@ if (!aiRes.ok) {
     res.status(200).json({ text, author: "AI-generated" });
   } catch (err) {
     console.error(err);
-    res.status(500).json({ error: "Debug: " + err.message });
+res.status(500).json({ error: "Could not generate a quote. Try again in a moment." });
   }
 }
