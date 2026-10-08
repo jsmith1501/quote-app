@@ -66,6 +66,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
 .mini-card p{font-family:'Fraunces',serif;font-size:1.05rem;line-height:1.5;flex:1}
 .mini-card footer{display:flex;justify-content:space-between;align-items:center;color:var(--muted);font-size:.85rem}
 .empty{color:var(--muted);grid-column:1/-1;text-align:center;padding:32px}
+.mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
+.mood-btn{font:500 .85rem 'Inter', sans-serif;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.mood-btn:hover{border-color:var(--ink);color:var(--ink)}
+.mood-btn.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.tag{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin-bottom:4px}
 
 .how{background:var(--tint);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .how h2{font-family:'Fraunces',serif;font-size:2rem;font-weight:600}
@@ -122,6 +127,14 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
     <div id="generator">
       <article class="quote-card">
         <div class="rule"></div>
+        <div class="mood-row" id="moods">
+  <button class="mood-btn active" data-mood="motivation">Motivation</button>
+  <button class="mood-btn" data-mood="wisdom">Wisdom</button>
+  <button class="mood-btn" data-mood="calm">Calm</button>
+  <button class="mood-btn" data-mood="humor">Humor</button>
+  <button class="mood-btn" data-mood="love">Love</button>
+</div>
+
         <p id="quote">Loading…</p>
         <p id="author"></p>
         <div class="card-actions">
