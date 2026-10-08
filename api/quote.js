@@ -14,7 +14,7 @@ export default async function handler(req, res) {
 
     let text = null;
     let lastErr = null;
-    for (const model of MODELS) {
+    for (const model of MODEL) {
       const r = await fetch(
         `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${process.env.GEMINI_API_KEY}`,
         {
@@ -25,9 +25,7 @@ export default async function handler(req, res) {
             contents: [{ parts: [{ text: prompt }] }]
           })
         }
-      )
-    };
-
+      );
       const body = await r.text();
       if (!r.ok) {
         console.error(`Gemini error ${r.status}: ${body.slice(0, 300)}`);
@@ -41,11 +39,12 @@ export default async function handler(req, res) {
     if (!text) throw new Error(lastErr || "No quote generated");
 
     
-    await sql`INSERT INTO quotes (text, author, mood) VALUES (${text}, 'anonymous')`;
+    await sql`INSERT INTO quotes (text, author, mood) VALUES (${text}, 'anonymous', ${mood})`;
     // 3. Send it to the browser
     res.status(200).json({ text, author: "anonymous" });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not generate a quote. Try again in a moment." });
   }
-}
+} 
+
