@@ -145,6 +145,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
         <div class="card-actions">
           <button id="new" class="btn btn-accent">New quote</button>
           <button id="copy" class="btn btn-outline">Copy</button>
+          <button id="like" class="like-btn">♥ <span id="likeCount">0</span></button>
+
         </div>
       </article>
     </div>
@@ -168,6 +170,17 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
       <div id="recent" class="grid"><p class="empty">Loading…</p></div>
     </div>
   </section>
+
+  <section id="loved" class="block">
+  <div class="wrap">
+    <div class="section-head">
+      <p class="eyebrow">Reader favorites</p>
+      <h2>Most loved</h2>
+      <p>The quotes visitors couldn't help but heart.</p>
+    </div>
+    <div id="lovedGrid" class="grid"><p class="empty">Loading…</p></div>
+  </div>
+</section>
 
   <section id="how" class="how">
     <div class="wrap block">
