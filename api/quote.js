@@ -39,9 +39,10 @@ export default async function handler(req, res) {
     if (!text) throw new Error(lastErr || "No quote generated");
 
     
-    await sql`INSERT INTO quotes (text, author, mood) VALUES (${text}, 'anonymous', ${mood})`;
+    const qrows = await sql`INSERT INTO quotes (text, author, mood) VALUES (${text}, 'anonymous', ${mood}) RETURNING id`;
+    const id = qrows[0].id;
     // 3. Send it to the browser
-    res.status(200).json({ text, author: "anonymous" });
+    res.status(200).json({ id: qrows[0].id, text, author: "anonymous", mood });
   } catch (err) {
     console.error(err);
     res.status(500).json({ error: "Could not generate a quote. Try again in a moment." });

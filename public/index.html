@@ -72,6 +72,11 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
 .mood-btn.active{background:var(--ink);border-color:var(--ink);color:#fff}
 .tag{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin-bottom:4px}
 
+.like-btn{font:500 .85rem 'Inter',sans-serif;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
+.like-btn:hover:not(:disabled){border-color:var(--accent);color:var(--accent)}
+.like-btn.liked{border-color:var(--accent);color:var(--accent)}
+.like-btn:disabled{cursor:default;opacity:.75}
+
 .how{background:var(--tint);border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
 .how h2{font-family:'Fraunces',serif;font-size:2rem;font-weight:600}
 .steps{display:grid;grid-template-columns:repeat(3,1fr);gap:32px;margin-top:32px;list-style:none}
@@ -209,15 +214,62 @@ const quoteEl = document.getElementById("quote");
 const authorEl = document.getElementById("author");
 const btn = document.getElementById("new");
 const copyBtn = document.getElementById("copy");
+const likeBtn = document.getElementById("like");
+const likeCount = document.getElementById("likeCount");
 const countEl = document.getElementById("count");
 const recentEl = document.getElementById("recent");
+const lovedEl = document.getElementById("lovedGrid");
 let current = null;
 let mood = "motivation";
-
+const likedIds = new Set(JSON.parse(localStorage.getItem("liked") || "[]"));
 
 function fmtDate(iso){
-  try { return new Date(iso).toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"}); }
-  catch { return ""; }
+  if(!iso) return "";
+  const d = new Date(String(iso).replace(" ", "T"));
+  return isNaN(d.getTime()) ? "" : d.toLocaleDateString(undefined,{month:"short",day:"numeric",year:"numeric"});
+}
+
+async function doLike(id){
+  if(likedIds.has(id)) return null;
+  try{
+    const res = await fetch("/api/like?id=" + id, { method: "POST" });
+    const data = await res.json();
+    if(!res.ok) return null;
+    likedIds.add(id);
+    localStorage.setItem("liked", JSON.stringify([...likedIds]));
+    if(current && current.id === id) current.likes = data.likes;
+    return data.likes;
+  }catch{ return null; }
+}
+
+function makeCard(r){
+  const d = document.createElement("div");
+  d.className = "mini-card";
+  const tag = document.createElement("span");
+  tag.className = "tag"; tag.textContent = r.mood || "motivation";
+  const p = document.createElement("p"); p.textContent = r.text;
+  const f = document.createElement("footer");
+  const a = document.createElement("span"); a.textContent = "— " + r.author;
+  const t = document.createElement("span"); t.textContent = fmtDate(r.created_at);
+  f.append(a, t);
+  const like = document.createElement("button");
+  like.className = "like-btn" + (likedIds.has(r.id) ? " liked" : "");
+  like.textContent = "♥ " + (r.likes || 0);
+  like.disabled = likedIds.has(r.id);
+  like.onclick = async () => {
+    const n = await doLike(r.id);
+    if(n !== null){ like.textContent = "♥ " + n; like.classList.add("liked"); like.disabled = true; }
+  };
+  d.append(tag, p, f, like);
+  return d;
+}
+
+function syncMainLike(){
+  if(!current || !current.id) return;
+  likeCount.textContent = current.likes || 0;
+  const liked = likedIds.has(current.id);
+  likeBtn.classList.toggle("liked", liked);
+  likeBtn.disabled = liked;
 }
 
 async function loadQuote(){
@@ -230,6 +282,7 @@ async function loadQuote(){
     current = q;
     quoteEl.textContent = q.text;
     authorEl.textContent = "— " + q.author;
+    syncMainLike();
   }catch{
     quoteEl.textContent = "Something went wrong. Please try again.";
     authorEl.textContent = "";
@@ -247,18 +300,16 @@ async function refreshMeta(){
   try{
     const rows = await (await fetch("/api/recent")).json();
     recentEl.innerHTML = rows.length ? "" : '<p class="empty">No quotes yet — be the first.</p>';
-    for(const r of rows){
-      const d = document.createElement("div");
-      d.className = "mini-card";
-      const tag = document.createElement("span"); tag.className = "tag"; tag.textContent = r.mood || "motivation"; d.append(tag);
-      const p = document.createElement("p"); p.textContent = r.text;
-      const f = document.createElement("footer");
-      const a = document.createElement("span"); a.textContent = "— " + r.author;
-      const t = document.createElement("span"); t.textContent = fmtDate(r.created_at);
-      f.append(a,t); d.append(p,f); recentEl.append(d);
-    }
+    for(const r of rows) recentEl.append(makeCard(r));
   }catch{
     recentEl.innerHTML = '<p class="empty">Could not load the collection.</p>';
+  }
+  try{
+    const rows = await (await fetch("/api/loved")).json();
+    lovedEl.innerHTML = rows.length ? "" : '<p class="empty">No likes yet — be the first.</p>';
+    for(const r of rows) lovedEl.append(makeCard(r));
+  }catch{
+    lovedEl.innerHTML = '<p class="empty">Could not load favorites.</p>';
   }
 }
 
@@ -273,6 +324,12 @@ copyBtn.onclick = async () => {
   setTimeout(()=>copyBtn.textContent="Copy",1500);
 };
 
+likeBtn.onclick = async () => {
+  if(!current || !current.id) return;
+  const n = await doLike(current.id);
+  if(n !== null) syncMainLike();
+};
+
 async function loadInitial(){
   try{
     const rows = await (await fetch("/api/recent")).json();
@@ -280,6 +337,7 @@ async function loadInitial(){
       current = rows[0];
       quoteEl.textContent = rows[0].text;
       authorEl.textContent = "— " + rows[0].author;
+      syncMainLike();
     } else {
       await loadQuote();
       return;
@@ -289,6 +347,7 @@ async function loadInitial(){
   }
   refreshMeta();
 }
+
 document.querySelectorAll(".mood-btn").forEach(b => {
   b.onclick = () => {
     document.querySelectorAll(".mood-btn").forEach(x => x.classList.remove("active"));
@@ -297,13 +356,13 @@ document.querySelectorAll(".mood-btn").forEach(b => {
     loadQuote();
   };
 });
-
 btn.onclick = loadQuote;
 document.getElementById("navGo").onclick = () => {
   document.getElementById("generator").scrollIntoView({behavior:"smooth"});
   loadQuote();
 };
 loadInitial();
+
 </script>
 </body>
 </html>
