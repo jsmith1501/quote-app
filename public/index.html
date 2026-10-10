@@ -438,36 +438,16 @@ document.getElementById("shareX").onclick = () => {
 document.getElementById("shareLi").onclick = () => {
   window.open("https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(location.origin), "_blank", "noopener");
 };
-document.getElementById("shareIg").onclick = async () => {
+document.getElementById("shareIg").onclick = () => {
   if(!current) return;
   const t = '"' + current.text + '" — ' + current.author + " (via The Daily Spark)";
-  try {
-    await navigator.clipboard.writeText(t);
-    document.getElementById("shareIg").textContent = "Caption copied — paste it in Instagram";
-  } catch {
-    document.getElementById("shareIg").textContent = "Copy failed";
-  }
-  window.open("https://www.instagram.com/", "_blank", "noopener");
-  setTimeout(() => document.getElementById("shareIg").textContent = "Instagram", 3000);
+  window.open("https://www.instagram.com/" + encodeURIComponent(t), "_blank", "noopener,width=550,height=420");
 };
-document.getElementById("shareFb").onclick = () => {
-  window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(location.origin), "_blank", "noopener,width=600,height=460");
-};
-document.getElementById("shareSc").onclick = async () => {
+document.getElementById("shareSc").onclick = () => {
   if(!current) return;
   const t = '"' + current.text + '" — ' + current.author + " (via The Daily Spark)";
-  try {
-    await navigator.clipboard.writeText(t);
-    document.getElementById("shareSc").textContent = "Caption copied — paste it in Snapchat";
-  } catch {
-    document.getElementById("shareSc").textContent = "Copy failed";
-  }
-  window.open("https://web.snapchat.com/", "_blank", "noopener");
-  setTimeout(() => document.getElementById("shareSc").textContent = "Snapchat", 3000);
+  window.open("https://www.snapchat.com/?" + encodeURIComponent(t), "_blank", "noopener,width=550,height=420");
 };
-
-
-
 
 async function loadInitial(){
   try{
