@@ -176,6 +176,8 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
           <button id="shareIg" class="link-btn">Instagram</button>
           <button id="shareFb" class="link-btn">Facebook</button>
           <button id="shareSc" class="link-btn">Snapchat</button>
+          <button id="shareImg" class="link-btn">Story image</button>
+
         </div>
       </article>
     </div>
@@ -464,6 +466,85 @@ document.getElementById("shareSc").onclick = async () => {
   }
   window.open("https://web.snapchat.com/", "_blank", "noopener");
   setTimeout(() => document.getElementById("shareSc").textContent = "Snapchat", 3000);
+};
+document.getElementById("shareImg").onclick = async () => {
+  if(!current) return;
+  const btn = document.getElementById("shareImg");
+  btn.textContent = "Making image…";
+  try {
+    await document.fonts.ready;
+    const W = 1080, H = 1920;
+    const cv = document.createElement("canvas");
+    cv.width = W; cv.height = H;
+    const x = cv.getContext("2d");
+    const bg = x.createLinearGradient(0, 0, W, H);
+    bg.addColorStop(0, "#0c0a12");
+    bg.addColorStop(1, "#171224");
+    x.fillStyle = bg;
+    x.fillRect(0, 0, W, H);
+    const blob = (cx, cy, r, color) => {
+      const g = x.createRadialGradient(cx, cy, 0, cx, cy, r);
+      g.addColorStop(0, color);
+      g.addColorStop(1, "rgba(0,0,0,0)");
+      x.fillStyle = g;
+      x.fillRect(cx - r, cy - r, r * 2, r * 2);
+    };
+    blob(W * 0.15, H * 0.12, 420, "rgba(15,118,110,.55)");
+    blob(W * 0.9, H * 0.28, 460, "rgba(180,83,9,.5)");
+    blob(W * 0.3, H * 0.85, 480, "rgba(126,34,206,.5)");
+    blob(W * 0.85, H * 0.78, 380, "rgba(190,18,60,.45)");
+    const tag = (MOOD_NAMES[mood] || mood).toUpperCase();
+    x.font = "700 34px Inter, sans-serif";
+    const tagW = x.measureText(tag).width + 72;
+    const tagX = (W - tagW) / 2, tagY = 560;
+    x.fillStyle = MOOD_COLORS[mood] || "#e8a020";
+    x.beginPath();
+    x.roundRect(tagX, tagY, tagW, 76, 38);
+    x.fill();
+    x.fillStyle = "#141210";
+    x.textAlign = "center";
+    x.textBaseline = "middle";
+    x.fillText(tag, W / 2, tagY + 40);
+    const words = current.text.split(" ");
+    const lines = [];
+    let line = "";
+    x.font = "600 68px Fraunces, Georgia, serif";
+    const maxW = W - 240;
+    for (const w of words) {
+      const t = line ? line + " " + w : w;
+      if (x.measureText(t).width > maxW && line) { lines.push(line); line = w; }
+      else line = t;
+    }
+    if (line) lines.push(line);
+    x.fillStyle = "#f5f1e8";
+    const lh = 96;
+    let ty = 830;
+    for (const l of lines) { x.fillText(l, W / 2, ty); ty += lh; }
+    x.font = "500 36px Inter, sans-serif";
+    x.fillStyle = "#a8a29a";
+    x.fillText("— " + current.author, W / 2, ty + 40);
+    x.font = "700 34px Inter, sans-serif";
+    x.fillStyle = MOOD_COLORS[mood] || "#e8a020";
+    x.fillText("THE DAILY SPARK", W / 2, H - 220);
+    const png = await new Promise(r => cv.toBlob(r, "image/png"));
+    const file = new File([png], "daily-spark-quote.png", { type: "image/png" });
+    if (navigator.canShare && navigator.canShare({ files: [file] })) {
+      await navigator.share({ files: [file], title: "The Daily Spark" });
+      btn.textContent = "Shared";
+    } else {
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(png);
+      a.download = "daily-spark-quote.png";
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 5000);
+      btn.textContent = "Downloaded";
+    }
+  } catch (e) {
+    btn.textContent = e && e.name === "AbortError" ? "Story image" : "Failed";
+  }
+  setTimeout(() => btn.textContent = "Story image", 2500);
 };
 
 
