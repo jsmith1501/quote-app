@@ -39,12 +39,6 @@ export default async function handler(req, res) {
     }
     if (!text) throw new Error(lastErr || "No quote generated");
 
-     const ip = (req.headers["x-forwarded-for"] || "").toString().split(",")[0].trim() || "unknown";
-     const wait = await checkRateLimit(ip);
-     if (wait > 0) {
-        return res.status(429).json({ error: `Slow down — try again in ${wait} seconds.` });
-     }
-
     const qrows = await sql`INSERT INTO quotes (text, author, mood) VALUES (${text}, 'anonymous', ${mood}) RETURNING id`;
     const id = qrows[0].id;
     // 3. Send it to the browser
