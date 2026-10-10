@@ -10,17 +10,18 @@
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,500;9..144,600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
 :root{
-  --paper:#faf7f1; --ink:#1c1a17; --muted:#6f665b; --line:#e7dfd2;
-  --card:#ffffff; --accent:#b34a22; --tint:#f4efe6;
+  --paper:#141210; --ink:#f5f0e8; --muted:#a39e93; --line:#2b2721;
+  --card:#1d1a16; --accent:#e8a020; --tint:#191612;
 }
+
 *{box-sizing:border-box;margin:0;padding:0}
 html{scroll-behavior:smooth}
 body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(--ink);line-height:1.6;-webkit-font-smoothing:antialiased}
 .wrap{max-width:1080px;margin:0 auto;padding:0 24px}
 .block{padding:72px 0}
-::selection{background:var(--accent);color:#fff}
+::selection{background:var(--accent);color:#141210}
 
-.site-header{border-bottom:1px solid var(--line);background:rgba(250,247,241,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
+.site-header{border-bottom:1px solid var(--line);background:rgba(20,18,16,.92);backdrop-filter:blur(8px);position:sticky;top:0;z-index:10}
 .header-in{display:flex;align-items:center;justify-content:space-between;height:64px}
 .wordmark{font-family:'Fraunces',serif;font-weight:600;font-size:1.25rem;color:var(--ink);text-decoration:none}
 .wordmark em{font-style:normal;color:var(--accent)}
@@ -29,10 +30,10 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
 .site-nav a:hover{color:var(--ink)}
 
 .btn{display:inline-block;font:600 .95rem 'Inter',sans-serif;padding:12px 22px;border-radius:8px;cursor:pointer;text-decoration:none;border:1px solid var(--ink);transition:transform .12s ease,box-shadow .12s ease;font-family:'Inter',sans-serif}
-.btn-solid{background:var(--ink);color:#fff}
+.btn-solid{background:var(--ink);color:var(--paper)}
 .btn-solid:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(28,26,23,.18)}
 .btn-outline{background:transparent;color:var(--ink)}
-.btn-outline:hover{background:var(--ink);color:#fff}
+.btn-outline:hover{background:var(--ink);color:var(--paper)}
 .btn-accent{background:var(--accent);border-color:var(--accent);color:#fff}
 .btn-accent:hover{transform:translateY(-1px);box-shadow:0 6px 16px rgba(179,74,34,.28)}
 .btn:disabled{opacity:.55;cursor:wait;transform:none;box-shadow:none}
@@ -40,7 +41,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
 
 .hero{display:grid;grid-template-columns:1.05fr .95fr;gap:56px;align-items:center;padding:72px 24px 64px}
 .eyebrow{font-size:.78rem;font-weight:600;letter-spacing:.14em;text-transform:uppercase;color:var(--accent);margin-bottom:16px}
-.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(2.4rem,5vw,3.6rem);line-height:1.08;letter-spacing:-.01em;margin-bottom:20px}
+.hero h1{font-family:'Fraunces',serif;font-weight:600;font-size:clamp(3rem,7vw,5rem);line-height:1.08;letter-spacing:-.01em;margin-bottom:20px}
 .lede{color:var(--muted);font-size:1.08rem;max-width:44ch;margin-bottom:28px}
 .hero-cta{display:flex;gap:12px;flex-wrap:wrap}
 
@@ -69,7 +70,13 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--paper);color:var(
 .mood-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:20px}
 .mood-btn{font:500 .85rem 'Inter', sans-serif;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
 .mood-btn:hover{border-color:var(--ink);color:var(--ink)}
-.mood-btn.active{background:var(--ink);border-color:var(--ink);color:#fff}
+.mood-btn[data-mood="motivation"].active{background:#e8a020;border-color:#e8a020;color:#141210}
+.mood-btn[data-mood="wisdom"].active{background:#a855f7;border-color:#a855f7;color:#141210}
+.mood-btn[data-mood="calm"].active{background:#2dd4bf;border-color:#2dd4bf;color:#141210}
+.mood-btn[data-mood="humor"].active{background:#ff6b6b;border-color:#ff6b6b;color:#141210}
+.mood-btn[data-mood="love"].active{background:#ec4899;border-color:#ec4899;color:#141210}
+.quote-card{position:relative;overflow:hidden}
+.quote-card::before{content:"\201C";position:absolute;top:-42px;left:14px;font-family:'Fraunces',serif;font-size:11rem;line-height:1;color:var(--accent);opacity:.14;pointer-events:none}
 .tag{display:inline-block;font-size:.72rem;font-weight:600;letter-spacing:.08em;text-transform:uppercase;color:var(--accent);border:1px solid var(--line);border-radius:999px;padding:3px 10px;margin-bottom:4px}
 
 .like-btn{font:500 .85rem 'Inter',sans-serif;padding:8px 16px;border-radius:999px;border:1px solid var(--line);background:transparent;color:var(--muted);cursor:pointer}
