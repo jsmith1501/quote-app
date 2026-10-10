@@ -175,7 +175,7 @@ body{font-family:'Inter',system-ui,sans-serif;background:var(--bg);color:var(--i
           <button id="shareLi" class="link-btn">LinkedIn</button>
           <button id="shareIg" class="link-btn">Instagram</button>
           <button id="shareFb" class="link-btn">Facebook</button>
-          <button id="shareSC" class="link-btn">Snapchat</button>
+          <button id="shareSc" class="link-btn">Snapchat</button>
         </div>
       </article>
     </div>
@@ -438,16 +438,48 @@ document.getElementById("shareX").onclick = () => {
 document.getElementById("shareLi").onclick = () => {
   window.open("https://www.linkedin.com/sharing/share-offsite/?url=" + encodeURIComponent(location.origin), "_blank", "noopener");
 };
-document.getElementById("shareIg").onclick = () => {
+document.getElementById("shareIg").onclick = async () => {
   if(!current) return;
   const t = '"' + current.text + '" — ' + current.author + " (via The Daily Spark)";
-  window.open("https://www.instagram.com/" + encodeURIComponent(t), "_blank", "noopener,width=550,height=420");
+  try {
+    await navigator.clipboard.writeText(t);
+    document.getElementById("shareIg").textContent = "Caption copied — paste it in Instagram";
+  } catch {
+    document.getElementById("shareIg").textContent = "Copy failed";
+  }
+  window.open("https://www.instagram.com/", "_blank", "noopener");
+  setTimeout(() => document.getElementById("shareIg").textContent = "Instagram", 3000);
 };
-document.getElementById("shareSc").onclick = () => {
+document.getElementById("shareFb").onclick = () => {
+  window.open("https://www.facebook.com/sharer/sharer.php?u=" + encodeURIComponent(location.origin), "_blank", "noopener,width=600,height=460");
+};
+document.getElementById("shareSc").onclick = async () => {
   if(!current) return;
   const t = '"' + current.text + '" — ' + current.author + " (via The Daily Spark)";
-  window.open("https://www.snapchat.com/?" + encodeURIComponent(t), "_blank", "noopener,width=550,height=420");
+  try {
+    await navigator.clipboard.writeText(t);
+    document.getElementById("shareSc").textContent = "Caption copied — paste it in Snapchat";
+  } catch {
+    document.getElementById("shareSc").textContent = "Copy failed";
+  }
+  window.open("https://web.snapchat.com/", "_blank", "noopener");
+  setTimeout(() => document.getElementById("shareSc").textContent = "Snapchat", 3000);
 };
+
+
+document.getElementById("shareSc").onclick = async () => {
+  if(!current) return;
+  const t = '"' + current.text + '" — ' + current.author + " (via The Daily Spark)";
+  try {
+    await navigator.clipboard.writeText(t);
+    document.getElementById("shareSc").textContent = "Caption copied — paste it in Snapchat";
+  } catch {
+    document.getElementById("shareSc").textContent = "Copy failed";
+  }
+  window.open("https://web.snapchat.com/", "_blank", "noopener");
+  setTimeout(() => document.getElementById("shareSc").textContent = "Snapchat", 3000);
+};
+
 
 async function loadInitial(){
   try{
