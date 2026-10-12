@@ -508,20 +508,6 @@ document.getElementById("shareImg").onclick = async () => {
 };
 
 
-document.getElementById("shareSc").onclick = async () => {
-  if(!current) return;
-  const t = '"' + current.text + '" — ' + current.author + " (via The Daily Spark)";
-  try {
-    await navigator.clipboard.writeText(t);
-    document.getElementById("shareSc").textContent = "Caption copied — paste it in Snapchat";
-  } catch {
-    document.getElementById("shareSc").textContent = "Copy failed";
-  }
-  window.open("https://web.snapchat.com/", "_blank", "noopener");
-  setTimeout(() => document.getElementById("shareSc").textContent = "Snapchat", 3000);
-};
-
-
 async function loadInitial(){
   try{
     const rows = await (await fetch("/api/recent")).json();
