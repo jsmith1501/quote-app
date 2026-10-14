@@ -555,6 +555,10 @@ document.getElementById("navGo").onclick = () => {
 };
 setMood("motivation");
 loadInitial();
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js");
+}
+
 </script>
 </body>
 </html>
