@@ -4,6 +4,21 @@ import { neon } from "@neondatabase/serverless";
 const MOODS = ["motivation", "wisdom", "calm", "humor", "love"];
 const MODEL = ["gemini-3.5-flash-lite", "gemini-2.5-flash-lite"];
 
+const ANGLES = [
+  "a vivid nature metaphor",
+  "a short imperative command",
+  "a paradox that resolves into insight",
+  "a rhetorical question",
+  "an image from everyday city life",
+  "a contrast between two opposites",
+  "a quiet observation, not advice",
+  "a celestial or cosmic image",
+  "a sports or movement metaphor",
+  "a cooking or craft metaphor",
+  "a memory from childhood",
+  "an architectural or building metaphor"
+];
+
 export default async function handler(req, res) {
   
   try {
@@ -11,7 +26,8 @@ export default async function handler(req, res) {
     if (!MOODS.includes(mood)) mood = "motivation";
 
     const sql = neon(process.env.DATABASE_URL);
-    const prompt = `Write one original ${mood} quote. It must be 1-2 sentences, plain text only, no quotation marks around it, no attribution. Do not copy existing quote.`;
+    const angle = ANGLES[Math.floor(Math.random() * ANGLES.length)];
+    const prompt = `Write one original ${mood} quote built around ${angle}. 1-2 sentences, plain text only, no quotation marks around it, no attribution. Avoid cliches and do not reuse the same signature words (like "anchor" or "soft") — make it sound unlike a typical AI-generated quote.`;
 
     let text = null;
     let lastErr = null;
@@ -23,7 +39,9 @@ export default async function handler(req, res) {
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({
             system_instruction: {parts: [{ text: "You write short original quotes. Reply with only the quote text, noting else." }] },
-            contents: [{ parts: [{ text: prompt }] }]
+            contents: [{ parts: [{ text: prompt }] }],
+            generationConfig: { temperature: 1.15, maxOutputTokens: 120 }
+
           })
         }
       );
